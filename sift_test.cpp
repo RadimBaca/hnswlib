@@ -80,9 +80,11 @@ float test_approx(float *massQ, size_t vecsize, size_t qsize, HierarchicalNSW<fl
         std::priority_queue<std::pair<float, labeltype >> gt(answers[i]);
         unordered_set<labeltype> g;
         total += gt.size();
-        while (gt.size()) {
+        int k = 10;
+        while (gt.size() && k>=0) {
             g.insert(gt.top().second);
             gt.pop();
+            k--;
         }
         while (result.size()) {
             if (g.find(result.top().second) != g.end())
@@ -97,10 +99,13 @@ void test_vs_recall(float *massQ, size_t vecsize, size_t qsize, HierarchicalNSW<
                     vector<std::priority_queue<std::pair<float, labeltype >>> &answers, size_t k) {
     //vector<size_t> efs = { 1,2,3,4,6,8,12,16,24,32,64,128,256,320 };//  = ; { 23 };
     vector<size_t> efs;
-    for (int i = 10; i < 100; i+=5) {
-        efs.push_back(i);
-    }
-    for (int i = 100; i < 200; i += 100) {
+//    for (int i = 10; i < 100; i+=5) {
+//        efs.push_back(i);
+//    }
+//    for (int i = 100; i < 200; i += 100) {
+//        efs.push_back(i);
+//    }
+    for (int i = 40; i <=150; i += 30) {
         efs.push_back(i);
     }
     /*for (int i = 300; i <600; i += 20) {
@@ -155,21 +160,36 @@ void sift_test() {
     size_t vecdim = 128;
 
     float *mass = new float[vecsize * vecdim];
-    ifstream input("sift1M/sift1M.bin", ios::binary);
+    ifstream input("../sift1M/sift1M.bin", ios::binary);
+    if (!input.is_open())
+    {
+        std::cout << "Can not open the input file\n";
+        exit(0);
+    }
     //ifstream input("../../1M_d=4.bin", ios::binary);
     input.read((char *) mass, vecsize * vecdim * sizeof(float));
     input.close();
 
     float *massQ = new float[qsize * vecdim];
     //ifstream inputQ("../siftQ100k.bin", ios::binary);
-    ifstream inputQ("sift1M/siftQ1M.bin", ios::binary);
+    ifstream inputQ("../sift1M/siftQ1M.bin", ios::binary);
+    if (!inputQ.is_open())
+    {
+        std::cout << "Can not open the query file\n";
+        exit(0);
+    }
     //ifstream inputQ("../../1M_d=4q.bin", ios::binary);
     inputQ.read((char *) massQ, qsize * vecdim * sizeof(float));
     inputQ.close();
 
     unsigned int *massQA = new unsigned int[qsize * 100];
     //ifstream inputQA("../knnQA100k.bin", ios::binary);
-    ifstream inputQA("sift1M/knnQA1M.bin", ios::binary);
+    ifstream inputQA("../sift1M/knnQA1M.bin", ios::binary);
+    if (!inputQA.is_open())
+    {
+        std::cout << "Can not open the result file\n";
+        exit(0);
+    }
     //ifstream inputQA("../../1M_d=4qa.bin", ios::binary);
     inputQA.read((char *) massQA, qsize * 100 * sizeof(int));
     inputQA.close();
@@ -212,6 +232,11 @@ void sift_test() {
     }
 #pragma omp parallel for
     for (int i = 1; i < vecsize; i++) {
+//        if (i == 82)
+//        {
+//            appr_alg.print(i);
+//            //exit(0);
+//        }
         appr_alg.addPoint((void *) (mass + vecdim * i), (size_t) i);
     }
     /*GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));

@@ -13,5 +13,9 @@ add_library(sift_test STATIC ${SOURCE_LIB})
 
 
 add_executable(main ${SOURCE_EXE})
-SET( CMAKE_CXX_FLAGS  "-Ofast -lrt -DNDEBUG -std=c++11 -DHAVE_CXX0X -openmp -march=native -fpic -w -fopenmp -ftree-vectorize -ftree-vectorizer-verbose=0" )
-target_link_libraries(main sift_test) 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -fno-rtti -Wall")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -fsanitize=address -static-libasan")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -flto -ftree-vectorize -march=native -Ofast -lrt -DNDEBUG -DHAVE_CXX0X -fpic -w -ftree-vectorizer-verbose=0")
+
+target_link_libraries(main sift_test)

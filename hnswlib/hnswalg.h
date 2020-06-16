@@ -216,8 +216,8 @@ namespace hnswlib {
                     tableint candidate_id = *(datal + j);
 //                    if (candidate_id == 0) continue;
 #ifdef USE_SSE
-                    _mm_prefetch((char *) (visited_array + *(datal + j + 1)), _MM_HINT_T0);
-                    _mm_prefetch(getDataByInternalId(*(datal + j + 1)), _MM_HINT_T0);
+//                    _mm_prefetch((char *) (visited_array + *(datal + j + 1)), _MM_HINT_T0);
+//                    _mm_prefetch(getDataByInternalId(*(datal + j + 1)), _MM_HINT_T0);
 #endif
                     if (visited_array[candidate_id] == visited_array_tag) continue;
                     visited_array[candidate_id] = visited_array_tag;
@@ -1003,6 +1003,25 @@ namespace hnswlib {
             return result;
         }
 
+        void print(int max_count)
+        {
+            for (int i = 0; i < max_count; i++) {
+                std::cout << i << ": ";
+                int *data = (int *) get_linklist0(i);
+                size_t size = getListCount((linklistsizeint *) data);
+                std::vector<int> d;
+                for (size_t j = 1; j <= size; j++) {
+                    d.push_back(*(data + j));
+                    //std::cout << candidate_id << "  ";
+                }
+                std::sort(d.begin(), d.end());
+                for (auto item : d) {
+                    std::cout << item << "  ";
+                }
+                std::cout << "\n";
+            }
+            std::cout << "\n\n";
+        }
     };
 
 }
